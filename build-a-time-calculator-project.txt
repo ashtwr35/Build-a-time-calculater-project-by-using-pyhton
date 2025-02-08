@@ -1,0 +1,56 @@
+def add_time(start, duration, day=None):
+    days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    
+    # start time
+    start_time, period = start.split()
+    start_hour, start_minute = map(int, start_time.split(':'))
+    
+    # Convert start time to 24-hour format
+    if period == "PM" and start_hour != 12:
+        start_hour += 12
+    elif period == "AM" and start_hour == 12:
+        start_hour = 0
+    
+    # duration
+    duration_hour, duration_minute = map(int, duration.split(':'))
+    
+    # Determine new time
+    total_minutes = start_minute + duration_minute
+    new_minute = total_minutes % 60
+    total_hours = start_hour + duration_hour + (total_minutes // 60)
+    new_hour = total_hours % 24
+    
+    # Determine AM/PM
+    new_period = "AM" if new_hour < 12 else "PM"
+    if new_hour == 0:
+        new_hour = 12
+    elif new_hour > 12:
+        new_hour -= 12
+    
+    # Determine number of days later
+    days_later = total_hours // 24
+    
+    # Determine the new day of the week
+    if day:
+        day_index = (days_of_week.index(day.capitalize()) + days_later) % 7
+        new_day = ", " + days_of_week[day_index]
+    else:
+        new_day = ""
+    
+    # Format days later string
+    if days_later == 1:
+        days_later_str = " (next day)"
+    elif days_later > 1:
+        days_later_str = f" ({days_later} days later)"
+    else:
+        days_later_str = ""
+    
+    return f"{new_hour}:{new_minute:02d} {new_period}{new_day}{days_later_str}"
+
+# Example usage
+print(add_time('3:00 PM', '5:10'))
+print(add_time('11:30 AM', '6:30', 'Monday'))
+print(add_time('11:50 AM', '00:20'))
+print(add_time('10:30 PM', '3:30'))
+print(add_time('11:50 PM', '24:20', 'tueSday'))
+print(add_time('6:30 PM', '20:40'))
